@@ -35,7 +35,7 @@ wss.on("connection", (ws) => {
         client.send(
           JSON.stringify({
             fromUserId: 0,
-            fromUserName: "robot",
+            fromUserName: "robot自动回复",
             toUserId: 0,
             type: "text",
             content,
@@ -45,16 +45,19 @@ wss.on("connection", (ws) => {
     }
   });
   setInterval(() => {
-    ws.send(
-      JSON.stringify({
-        fromUserId: 0,
-        fromUserName: "robot time",
-        toUserId: 0,
-        type: "text",
-        content: robot[Math.ceil(Math.random() * 5)],
-      })
-    );
-  }, 30000)
+    const content = robot[Math.ceil(Math.random() * 5)]
+    wss.clients.forEach((client) => {
+      client.send(
+        JSON.stringify({
+          fromUserId: -1,
+          fromUserName: "robot广播",
+          toUserId: 0,
+          type: "text",
+          content,
+        })
+      );
+    })
+  }, 10000)
   
 
   // 连接关闭
@@ -64,13 +67,13 @@ wss.on("connection", (ws) => {
 });
 
 app.get("/", function (req, res) {
-  res.sendFile(path.join(__dirname, "../src/client1.html"));
+  res.sendFile(path.join(__dirname, "../src/page1.html"));
 });
 app.get("/2", function (req, res) {
-  res.sendFile(path.join(__dirname, "../src/client2.html"));
+  res.sendFile(path.join(__dirname, "../src/page2.html"));
 });
 app.get("/3", function (req, res) {
-  res.sendFile(path.join(__dirname, "../src/client3.html"));
+  res.sendFile(path.join(__dirname, "../src/page3.html"));
 });
 
 server.listen(8888, function () {
